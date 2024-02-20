@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import prisma from "../config/db.config.js";
+import jwt from "jsonwebtoken";
 
 class AuthController {
     static async register(req, res) {
@@ -18,28 +19,41 @@ class AuthController {
     }
 
     static async login(req, res) {
-        const { email, password } = req.body;
+        try {
+            const { email, password } = req.body;
 
-        const user = await prisma.user.findUnique({
-            where: {
-                email: email
-            }
-        });
+            const user = await prisma.user.findUnique({
+                where: {
+                    email: email
+                }
+            });
+            console.log(user);
 
-        if (user) {
-            // check both password
-            if (bcrypt.compareSync(password, user.password)) {
-                return res.status(401).json({ message: "Invalid credentials" });
+            if (user) {
+                // check both password
+                if (!bcrypt.compareSync(password, user.password)) {                   
+                    return res.status(401).json({ message: "Invalid credentials" });
+                }
+
+                const payload = {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email
+                };
+                console.log(payload);
+
+                const token = jwt.sign(payload, process.env.JWT_SECRET, {
+                    expiresIn: "365d"
+                });
+                console.log(payload, token);
+
+                return res.json({ message: "Logged in successfully", access_token: `Bearer ${token}` })
             }
 
-            const payload = {
-                id:user.id,
-                name:user.name,
-                email:user.email
-            }
+            return res.status(401).json({ message: "Invalid credentials" });
+        } catch (error) {
+            return res.status(500).json({ message: "something went wrong" });
         }
-
-        return res.status(401).json({ message: "Invalid credentials" });
 
     }
 }
