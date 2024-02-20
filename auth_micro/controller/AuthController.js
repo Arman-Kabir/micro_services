@@ -30,7 +30,7 @@ class AuthController {
 
             if (user) {
                 // check both password
-                if (!bcrypt.compareSync(password, user.password)) {                   
+                if (!bcrypt.compareSync(password, user.password)) {
                     return res.status(401).json({ message: "Invalid credentials" });
                 }
 
@@ -38,11 +38,11 @@ class AuthController {
                     id: user.id,
                     name: user.name,
                     email: user.email
-                };          
+                };
 
                 const token = jwt.sign(payload, process.env.JWT_SECRET, {
                     expiresIn: "365d"
-                });               
+                });
 
                 return res.json({ message: "Logged in successfully", access_token: `Bearer ${token}` })
             }
@@ -54,6 +54,9 @@ class AuthController {
 
     }
 
-    
+    static async user(req, res) {
+        const user = req.user;
+        return res.status(200).json({ user: user });
+    }
 }
 export default AuthController;
