@@ -27,7 +27,6 @@ class AuthController {
                     email: email
                 }
             });
-            console.log(user);
 
             if (user) {
                 // check both password
@@ -39,13 +38,11 @@ class AuthController {
                     id: user.id,
                     name: user.name,
                     email: user.email
-                };
-                console.log(payload);
+                };          
 
                 const token = jwt.sign(payload, process.env.JWT_SECRET, {
                     expiresIn: "365d"
-                });
-                console.log(payload, token);
+                });               
 
                 return res.json({ message: "Logged in successfully", access_token: `Bearer ${token}` })
             }
@@ -56,5 +53,7 @@ class AuthController {
         }
 
     }
+
+    
 }
 export default AuthController;
