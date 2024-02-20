@@ -13,8 +13,34 @@ class AuthController {
             });
             return res.json({ message: "Account created successfully", user });
         } catch (error) {
-            return res.status(500).json({message:"Something went wrong"});
+            return res.status(500).json({ message: "Something went wrong" });
         }
+    }
+
+    static async login(req, res) {
+        const { email, password } = req.body;
+
+        const user = await prisma.user.findUnique({
+            where: {
+                email: email
+            }
+        });
+
+        if (user) {
+            // check both password
+            if (bcrypt.compareSync(password, user.password)) {
+                return res.status(401).json({ message: "Invalid credentials" });
+            }
+
+            const payload = {
+                id:user.id,
+                name:user.name,
+                email:user.email
+            }
+        }
+
+        return res.status(401).json({ message: "Invalid credentials" });
+
     }
 }
 export default AuthController;
