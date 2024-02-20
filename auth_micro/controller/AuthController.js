@@ -11,13 +11,10 @@ class AuthController {
             const user = await prisma.user.create({
                 data: payload,
             });
-
-
             return res.json({ message: "Account created successfully", user });
         } catch (error) {
-            return res.json.status(500).json({message:"Something went wrong"});
+            return res.status(500).json({message:"Something went wrong"});
         }
     }
 }
-
 export default AuthController;
