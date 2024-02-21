@@ -4,7 +4,22 @@ class PostController {
     static async index(req, res) {
         try {
             const posts = await prisma.post.findMany({});
-            return res.json({ posts });
+
+            let userIds = [];
+            posts.forEach((item) => {
+                userIds.push(item.user_id);
+            });
+
+            // Method 1
+            let postWithUsers = await Promise.all(
+                posts.forEach((post)=>{
+                    
+                })
+            )
+
+
+
+            return res.json({ posts, userIds });
         } catch (error) {
             return res.status(500).json({ message: "Something went wrong" });
         }
@@ -21,9 +36,9 @@ class PostController {
                     content,
                 },
             });
-            return res.json({ message: "Post created successfully",post });
+            return res.json({ message: "Post created successfully", post });
         } catch (error) {
-            return res.status(500).json({message:"Something went wrong"});
+            return res.status(500).json({ message: "Something went wrong" });
         }
     }
 }
