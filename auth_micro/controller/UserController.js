@@ -6,6 +6,11 @@ class UserController {
         const user = await prisma.user.findUnique({
             where: {
                 id: id
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true
             }
         });
         return res.json({ user: user });
